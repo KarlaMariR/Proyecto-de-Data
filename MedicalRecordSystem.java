@@ -1,3 +1,5 @@
+import java.util.Queue;
+import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.List;
 import java.util.ArrayList;
@@ -10,12 +12,14 @@ public class MedicalRecordSystem {
     private List<Patient> registeredPatients;
     private List<Employee> registeredEmployees;
     private List<Appointment> appointments;
+    private Queue<Patient> waitingQueue;
 
 
     public MedicalRecordSystem() {
         this.registeredPatients = new ArrayList<>();
         this.registeredEmployees = new ArrayList<>();
         this.appointments = new ArrayList<>();
+        this.waitingQueue = new LinkedList<>();
     }
 
     // Registrar un nuevo paciente.
@@ -137,6 +141,54 @@ public class MedicalRecordSystem {
         System.out.println("Cita no encontrada");
     }
 
+    // Agregar paciente a la cola de espera
+    public void addToWaitingQueue(String patientId) {
+        Patient patient = findPatientById(patientId);
+        if (patient == null) {
+            System.out.println("Paciente no encontrado");
+            return;
+        }
+
+        if (waitingQueue.contains(patient)) {
+            System.out.println("Paciente ya esta en espera");
+            return;
+        }
+
+        if (patient.getType() == Patient.PatientType.EMERGENCY) {
+            System.out.println("Paciente debe ir a urgencias");
+            return;
+        }
+
+        waitingQueue.add(patient);
+        System.out.println("Paciente agregado a la cola de espera: " + patient.getName());
+    }
+
+    //Atender al siguiente paciente en la cola de espera
+    public Patient attendNextPatient() {
+        if (waitingQueue.isEmpty()) {
+            System.out.println("No hay pacientes en espera");
+            return null;
+        }
+
+        Patient nextPatient = waitingQueue.poll();
+        System.out.println("Atendiendo al paciente: " + nextPatient.getName());
+
+        return nextPatient;
+    }
+
+    // Mostrar pacientes en espera
+    public void showWaitingPatients() {
+        if (waitingQueue.isEmpty()) {
+            System.out.println("No hay pacientes en espera");
+            return;
+        }
+
+        System.out.println("Pacientes en espera:");
+
+        for (Patient p : waitingQueue) {
+            System.out.println(p.toString());
+        }
+    }
 
     // El metodo principal del file.
     public static void main(String[] args) {
