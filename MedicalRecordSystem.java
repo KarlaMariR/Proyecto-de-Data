@@ -1,16 +1,21 @@
 import java.util.Scanner;
 import java.util.List;
 import java.util.ArrayList;
+import java.time.LocalDateTime;
+
 
 
 public class MedicalRecordSystem {
     // Lista para archivar los pacientes y empleados registrados ahora.
     private List<Patient> registeredPatients;
     private List<Employee> registeredEmployees;
+    private List<Appointment> appointments;
+
 
     public MedicalRecordSystem() {
         this.registeredPatients = new ArrayList<>();
         this.registeredEmployees = new ArrayList<>();
+        this.appointments = new ArrayList<>();
     }
 
     // Registrar un nuevo paciente.
@@ -77,6 +82,61 @@ public class MedicalRecordSystem {
         }
         System.out.println("Final de lista");
     }
+
+    // Hacer Cita
+    public void scheduleAppointment(String id, String patientId, String doctorId, LocalDateTime dateTime) {
+        Patient patient = findPatientById(patientId);
+        Employee doctor = findEmployeeById(doctorId);
+
+        if (patient == null) {
+            System.out.println("Paciente no encontrado");
+            return;
+        }
+
+        if (doctor == null || doctor.getRole() != Employee.Role.DOCTOR) {
+            System.out.println("Medico no encontrado");
+            return;
+        }
+
+        if (dateTime == null) {
+            System.out.println("Fecha invalida");
+            return;
+        }
+
+        for (Appointment a : appointments) {
+            if (a.getId().equals(id)) {
+                System.out.println("La cita ya existe");
+                return;
+            }
+
+            if (a.getDateTime().equals(dateTime)) {
+                if (a.getDoctor().getId().equals(doctorId) ||
+                    a.getPatient().getId().equals(patientId)) {
+                    System.out.println("Horario no disponible");
+                    return; 
+                }
+            }
+        }
+
+        Appointment newAppointment = new Appointment(id, patient, doctor, dateTime);
+        appointments.add(newAppointment);
+
+        System.out.println("Cita registrada");
+        System.out.println(newAppointment); 
+    }
+
+    // Cancelar Cita
+    public void cancelAppointment(String id) {
+        for (int i = 0; i < appointments.size(); i++) {
+            if (appointments.get(i).getId().equals(id)) {
+                appointments.remove(i);
+                System.out.println("Cita cancelada");
+                return;
+            }
+        }
+        System.out.println("Cita no encontrada");
+    }
+
 
     // El metodo principal del file.
     public static void main(String[] args) {
