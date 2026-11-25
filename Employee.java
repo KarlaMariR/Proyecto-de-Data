@@ -3,6 +3,7 @@ public class Employee {
     private String name;
     private Role role;
     private MedicalSpecialty specialty;
+    private boolean isAvailable;
 
     public enum Role {
         DOCTOR,
@@ -22,18 +23,22 @@ public class Employee {
         this.name = name;
         this.role = role;
         this.specialty = specialty;
+        this.isAvailable = true;
     }
 
     public String getId() { return id; }
     public String getName() { return name; }
     public Role getRole() { return role; }
     public MedicalSpecialty getSpecialty() { return specialty; }
+    
+    public boolean isAvailable() { return isAvailable; }
+    public void setAvailable(boolean available) { this.isAvailable = available; } 
 
     @Override 
     public String toString() {
         String info = "Id: " + id + " Nombre: " + name + " Rol: " + role;
         if (role == Role.DOCTOR) {
-            info += " Especialidad: " + specialty;
+            info += " Especialidad: " + specialty + " Disponible " + ( isAvailable ? "Si" : "No" );
         }
         return info;
     }   

@@ -13,6 +13,7 @@ public class MedicalRecordSystem {
     private List<Employee> registeredEmployees;
     private List<Appointment> appointments;
     private Queue<Patient> waitingQueue;
+    private List<MedicalVisit> medicalHistory;
 
 
     public MedicalRecordSystem() {
@@ -20,6 +21,7 @@ public class MedicalRecordSystem {
         this.registeredEmployees = new ArrayList<>();
         this.appointments = new ArrayList<>();
         this.waitingQueue = new LinkedList<>();
+        this.medicalHistory = new ArrayList<>();
     }
 
     // Registrar un nuevo paciente.
@@ -41,7 +43,7 @@ public class MedicalRecordSystem {
     // Add the Employee thing here
     public void registerNewEmployee(String id, String name, Employee.Role role, Employee.MedicalSpecialty specialty) {
         
-        if ( findPatientById(id) != null ) {
+        if ( findEmployeeById(id) != null ) {
             System.out.println("Error");
             return;
         }
@@ -189,6 +191,76 @@ public class MedicalRecordSystem {
             System.out.println(p.toString());
         }
     }
+
+    // Asignar al paciente a un medico disponible
+    public void assignPatientToDoctor(String DoctorId) {
+        Employee doctor = findEmployeeById(DoctorId);
+
+        // Los 3 valiladores
+        if ( doctor == null || doctor.getRole() != Employee.Role.DOCTOR ) {
+            System.out.println("Error: El id ingresado no es medico.");
+            return;
+        }
+
+        if ( !doctor.isAvailable() ) {
+            System.out.println("Error: El Medico" + doctor.getName() + "no esta disponible en este momento.");
+            return;
+        }
+
+        if ( waitingQueue.isEmpty() ) {
+            System.out.println("No hay fila.");
+            return;
+        }
+
+        // Selecionar el paciente del queue 
+        Patient patient = waitingQueue.poll();
+        
+        // Cambiar el estatus del doctor a ocupado.
+        doctor.setAvailable(false); 
+
+        // Los strings que dice que pasa.
+        System.out.println("El medico" + doctor.getName() + " (" + doctor.getSpecialty() + ") esta disponible." );
+        System.out.println("El paciente" + patient.getName() + " (Id " + patient.getId() + ") fue selecionado." );
+        System.out.println("Doctor haciendo cosas que hace un doctor.");
+        System.out.println("El medico atiende al paciente");
+        System.out.println("El medico" + doctor.getName() + "esta ocupado");
+
+    }
+    
+    // Registrar la visita medica 
+    public void registerMedicalVisit(String doctorId, String patientId, String diagnosis, String notes) {
+        Employee doctor = findEmployeeById(doctorId);
+        Patient patient = findPatientById(patientId);
+
+        // Los 3 valiladores
+        if ( doctor == null || doctor.getRole() != Employee.Role.DOCTOR ) {
+            System.out.println("Error: Medico no valido.");
+            return;
+        }
+
+        if ( patient == null ) {
+            System.out.println("Error: No encontro el paciente.");
+            return;
+        }
+        
+        if ( doctor.isAvailable() ) {
+            System.out.println("Error: El Medico" + doctor.getName() + "no tiene consulta activa.");
+            return;
+        }
+
+        // Para crear un archivo nuevo.
+        MedicalVisit newVisit = new MedicalVisit(patient, doctor, diagnosis, notes);
+        medicalHistory.add(newVisit);
+
+        // Para desocupar el doctor
+        doctor.setAvailable(true);
+
+        // Los strings que dice que pasa.
+        System.out.println("Visita registrada!");
+        System.out.println( newVisit.toString() );
+        System.out.println("El medico " + doctor.getName() + " ahora esta disponible." );
+    }
+
 
     // El metodo principal del file.
     public static void main(String[] args) {
