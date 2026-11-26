@@ -28,6 +28,6 @@ public class TestMedicalVisits {
         System.out.println("\n Historial Medico ");
         system.showPatientMedicalHistory("P1");
         system.showPatientMedicalHistory("P2");   //KRB
-        system.showPatientMedicalHistory("P99")   //KRB
+        system.showPatientMedicalHistory("P99");   //KRB
     }
 }
