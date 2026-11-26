@@ -1,0 +1,31 @@
+public class TestMedicalVisits {
+    public static void main(String[] args) {
+        MedicalRecordSystem system = new MedicalRecordSystem();
+
+        // Es el setup para el programa y data.
+        system.registerNewEmployee("D1", "Dr. Carlos", Employee.Role.DOCTOR, Employee.MedicalSpecialty.GENERAL);
+        system.registerNewPatient("P1", "Maria", Patient.PatientType.NORMAL);
+        system.addToWaitingQueue("P1");
+
+        // Para asignar el paciente.
+        System.out.println("\n Asignando paciente ");
+        system.assignPatientToDoctor("D1");
+
+        // Este es para el doctor intente de ver a otro paciente y no se puede.
+        system.registerNewPatient("P2", "Carlos", Patient.PatientType.NORMAL);
+        system.addToWaitingQueue("P2");
+        system.assignPatientToDoctor("D1"); 
+
+        // Para registrar una visita medica. 
+        System.out.println("\n Registrando visita ");
+        system.registerMedicalVisit("D1", "P1", "Miopía leve", "Se recetan lentes.");
+
+        // Este es para el doctor tenga otro paciente.
+        System.out.println("\n Asignando siguiente paciente ");
+        system.assignPatientToDoctor("D1");
+
+        // En este momento todavia falta añadir esta parte. Pero deberia ser la historia medica que no es mi parte.
+        System.out.println("\n Historial Medico ");
+        system.showPatientMedicalHistory("P1");
+    }
+}
