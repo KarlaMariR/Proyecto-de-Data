@@ -2,9 +2,11 @@ import java.util.Queue;
 import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.List;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.time.LocalDateTime;
-
+import java.time.LocalDate; //KRB
 
 
 public class MedicalRecordSystem {
@@ -13,7 +15,8 @@ public class MedicalRecordSystem {
     private List<Employee> registeredEmployees;
     private List<Appointment> appointments;
     private Queue<Patient> waitingQueue;
-    private List<MedicalVisit> medicalHistory;
+    private List<MedicalVisit> medicalHistory; 
+    private Deque<MedicalVisit> recentVisits; //KRB
 
 
     public MedicalRecordSystem() {
@@ -22,6 +25,7 @@ public class MedicalRecordSystem {
         this.appointments = new ArrayList<>();
         this.waitingQueue = new LinkedList<>();
         this.medicalHistory = new ArrayList<>();
+        this.recentVisits = new ArrayDeque<>(); //KRB
     }
 
     // Registrar un nuevo paciente.
@@ -251,6 +255,7 @@ public class MedicalRecordSystem {
         // Para crear un archivo nuevo.
         MedicalVisit newVisit = new MedicalVisit(patient, doctor, diagnosis, notes);
         medicalHistory.add(newVisit);
+        recentVisits.push(newVisit);   // KRB
 
         // Para desocupar el doctor
         doctor.setAvailable(true);
@@ -261,6 +266,83 @@ public class MedicalRecordSystem {
         System.out.println("El medico " + doctor.getName() + " ahora esta disponible." );
     }
 
+    //Mostrar el historial medico de un paciente KRB
+    public void showPatientMedicalHistory(String patientId) {
+        Patient patient = findPatientById(patientId);
+
+        if (patient == null) {
+            System.out.println("Paciente no encontrado");
+            return;
+        }
+
+        System.out.println("Historial medico de " + patient.getName() + ":");
+
+        boolean hasHistory = false;
+        for (MedicalVisit visit : medicalHistory) {
+            if (visit.getPatient().getId().equals(patientId)) {
+                System.out.println(visit.toString());
+                hasHistory = true;
+            }
+        }
+
+        if (!hasHistory) {
+            System.out.println("No hay historial medico para este paciente.");
+        }
+    }
+    // Buscar medicos por especialidad KRB
+    public void findDoctorsBySpecialty(Employee.MedicalSpecialty specialty) {
+        System.out.println("Medicos con especialidad " + specialty + ":");
+        boolean found = false;
+        for (Employee e : registeredEmployees) {
+            if (e.getRole() == Employee.Role.DOCTOR && e.getSpecialty() == specialty) {
+                System.out.println(e.toString());
+                found = true;
+            }
+        }
+        if (!found) {
+            System.out.println("No se encontraron medicos con esa especialidad.");
+        }
+    }
+    //Mostrar medicos disponibles KRB
+    public void showAvailableDoctors() {
+        System.out.println("Medicos disponibles:");
+        boolean found = false;
+        for (Employee e : registeredEmployees) {
+            if (e.getRole() == Employee.Role.DOCTOR && e.isAvailable()) {
+                System.out.println(e.toString());
+                found = true;
+            }
+        }
+        if (!found) {
+            System.out.println("No hay medicos disponibles en este momento.");
+        }
+    }
+    //Mostrar citas de hoy KRB
+    public void showTodaysAppointments() {
+        LocalDate today = LocalDate.now();
+        System.out.println("Citas para hoy (" + today + "):");
+        boolean found = false;
+        for (Appointment a : appointments) {
+            if (a.getDateTime().toLocalDate().equals(today)) {
+                System.out.println(a.toString());
+                found = true;
+            }
+        }
+        if (!found) {
+            System.out.println("No hay citas para hoy.");
+        }
+    }
+    //Mostrar visitas recientes KRB
+    public void showRecentVisits() {
+        System.out.println("Visitas recientes:");
+        for (MedicalVisit visit : recentVisits) {
+            System.out.println(visit.toString());
+        }
+        if (recentVisits.isEmpty()) {
+            System.out.println("No hay visitas recientes");
+            return;
+        }
+    }
 
     // El metodo principal del file.
     public static void main(String[] args) {

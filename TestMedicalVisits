@@ -27,5 +27,7 @@ public class TestMedicalVisits {
         // En este momento todavia falta añadir esta parte. Pero deberia ser la historia medica que no es mi parte.
         System.out.println("\n Historial Medico ");
         system.showPatientMedicalHistory("P1");
+        system.showPatientMedicalHistory("P2");   //KRB
+        system.showPatientMedicalHistory("P99")   //KRB
     }
 }
