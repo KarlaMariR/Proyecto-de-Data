@@ -334,13 +334,13 @@ public class MedicalRecordSystem {
     }
     //Mostrar visitas recientes KRB
     public void showRecentVisits() {
+    if (recentVisits.isEmpty()) {
+            System.out.println("No hay visitas recientes");
+            return;
+        }
         System.out.println("Visitas recientes:");
         for (MedicalVisit visit : recentVisits) {
             System.out.println(visit.toString());
-        }
-        if (recentVisits.isEmpty()) {
-            System.out.println("No hay visitas recientes");
-            return;
         }
     }
 
