@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Map;
+import java.util.PriorityQueue;
+
 
 
 public class MedicalRecordSystem {
@@ -20,6 +22,7 @@ public class MedicalRecordSystem {
     private Set<String> registeredPatientIds;
     private List<Appointment> appointments;
     private Queue<Patient> waitingQueue;
+    private PriorityQueue<Patient> emergencyQueue;
     private List<MedicalVisit> medicalHistory; 
     private Deque<MedicalVisit> recentVisits; //KRB
 
@@ -30,6 +33,9 @@ public class MedicalRecordSystem {
         this.registeredPatientIds = new HashSet<>();
         this.appointments = new ArrayList<>();
         this.waitingQueue = new LinkedList<>();
+        this.emergencyQueue = new PriorityQueue<>(
+            (p1, p2) -> Integer.compare(p1.getPriority(), p2.getPriority())
+        );
         this.medicalHistory = new ArrayList<>();
         this.recentVisits = new ArrayDeque<>(); //KRB
     }
@@ -181,6 +187,69 @@ public class MedicalRecordSystem {
         waitingQueue.add(patient);
         System.out.println("Paciente agregado a la cola de espera: " + patient.getName());
     }
+    
+    // Agregar paciente a la cola de urgencias
+    public void addEmergencyPatient(String patientId, int priority) {
+        Patient patient = findPatientById(patientId);
+
+        if (patient == null) {
+            System.out.println("Paciente no encontrado");
+            return;
+        }
+
+        if (patient.getType() != Patient.PatientType.EMERGENCY) {
+            System.out.println("El paciente no es de urgencia");
+            return;
+        }
+
+        if (priority < 1 || priority > 3) {
+            System.out.println("Prioridad invalida");
+            return;
+        }
+
+        if (emergencyQueue.contains(patient)) {
+            System.out.println("Paciente ya esta en urgencias");
+            return;
+        }
+
+        patient.setPriority(priority);
+        emergencyQueue.add(patient);
+
+        System.out.println("Paciente agregado a urgencias: "
+            + patient.getName() + " Prioridad: " + priority);
+    }
+
+    // Atender al paciente con mayor prioridad
+    public void attendNextEmergencyPatient() {
+        if (emergencyQueue.isEmpty()) {
+            System.out.println("No hay pacientes en urgencias");
+            return;
+        }
+
+        Patient patient = emergencyQueue.poll();
+
+        System.out.println("Atendiendo urgencia: " + patient.getName()
+            + " Prioridad: " + patient.getPriority());
+    }
+
+    // Mostrar los pacientes en urgencias
+    public void showEmergencyPatients() {
+        if (emergencyQueue.isEmpty()) {
+            System.out.println("No hay pacientes en urgencias");
+            return;
+        }
+
+        System.out.println("Pacientes en urgencias:");
+
+        PriorityQueue<Patient> copy = new PriorityQueue<>(emergencyQueue);
+
+        while (!copy.isEmpty()) {
+            Patient patient = copy.poll();
+            System.out.println(patient.getName()
+                + " Prioridad: " + patient.getPriority());
+        }
+    }
+
 
     //Atender al siguiente paciente en la cola de espera
     public Patient attendNextPatient() {
