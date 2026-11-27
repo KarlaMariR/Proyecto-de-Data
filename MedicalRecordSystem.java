@@ -59,7 +59,7 @@ public class MedicalRecordSystem {
         }
 
         Employee newEmployee = new Employee(id,name,role,specialty);
-        registeredEmployees.put(name, newEmployee);
+        registeredEmployees.put(id, newEmployee);
     
         System.out.println("Registered");
         System.out.println("-> " + newEmployee.toString() );
@@ -328,6 +328,20 @@ public class MedicalRecordSystem {
         }
         if (!found) {
             System.out.println("No hay medicos disponibles en este momento.");
+        }
+    }
+
+    //Mostrar citas
+    public void showAllAppointments() {
+        if (appointments.isEmpty()) {
+            System.out.println("No hay citas registradas");
+            return;
+        }
+
+        System.out.println("Todas las citas:");
+
+        for (Appointment a : appointments) {
+            System.out.println(a.toString());
         }
     }
     //Mostrar citas de hoy KRB

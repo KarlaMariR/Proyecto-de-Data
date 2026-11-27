@@ -29,5 +29,18 @@ public class TestAppointments {
 
         // Registrar otra cita en el horario liberado
         system.scheduleAppointment("C2", "P1", "D1", date);
+
+        // Registrar una cita para otro dia
+        system.scheduleAppointment("C3", "P1", "D1", date.plusDays(1));
+
+        // Mostrar todas las citas
+        system.showAllAppointments();
+
+        // Cancelar las citas
+        system.cancelAppointment("C2");
+        system.cancelAppointment("C3");
+
+        // Probar la lista vacia
+        system.showAllAppointments();
     }
 }
