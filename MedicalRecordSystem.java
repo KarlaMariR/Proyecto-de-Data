@@ -7,12 +7,17 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.time.LocalDateTime;
 import java.time.LocalDate; //KRB
+import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.Map;
 
 
 public class MedicalRecordSystem {
     // Lista para archivar los pacientes y empleados registrados ahora.
     private List<Patient> registeredPatients;
-    private List<Employee> registeredEmployees;
+    private Map<String,Employee> registeredEmployees;
+    private Set<String> registeredPatientIds;
     private List<Appointment> appointments;
     private Queue<Patient> waitingQueue;
     private List<MedicalVisit> medicalHistory; 
@@ -21,7 +26,8 @@ public class MedicalRecordSystem {
 
     public MedicalRecordSystem() {
         this.registeredPatients = new ArrayList<>();
-        this.registeredEmployees = new ArrayList<>();
+        this.registeredEmployees = new HashMap<>();
+        this.registeredPatientIds = new HashSet<>();
         this.appointments = new ArrayList<>();
         this.waitingQueue = new LinkedList<>();
         this.medicalHistory = new ArrayList<>();
@@ -31,8 +37,8 @@ public class MedicalRecordSystem {
     // Registrar un nuevo paciente.
     public void registerNewPatient(String id, String name, Patient.PatientType type) {
         
-        if ( findPatientById(id) != null ) {
-            System.out.println("Error");
+        if ( !registeredPatientIds.add(id) ) {
+            System.out.println("Error: Ya existe el paciente con el mismo Id.");
             return;
         }
     
@@ -47,16 +53,28 @@ public class MedicalRecordSystem {
     // Add the Employee thing here
     public void registerNewEmployee(String id, String name, Employee.Role role, Employee.MedicalSpecialty specialty) {
         
-        if ( findEmployeeById(id) != null ) {
-            System.out.println("Error");
+        if ( registeredEmployees.containsKey(id) ) {
+            System.out.println("Error: Ya existe empleado con el mismo Id.");
             return;
         }
 
         Employee newEmployee = new Employee(id,name,role,specialty);
-        registeredEmployees.add(newEmployee);
+        registeredEmployees.put(name, newEmployee);
     
         System.out.println("Registered");
         System.out.println("-> " + newEmployee.toString() );
+    }
+    
+    public void removeEmployee(String id) {
+        
+        if ( !registeredEmployees.containsKey(id) ) {
+            System.out.println("Error: No se encontro el id " + id + " para remover.");
+            return;
+        }
+
+        Employee removedEmployee = registeredEmployees.remove(id);
+        
+        System.out.println("El empleado " + removedEmployee.getName() + " (" + removedEmployee.getId() + ") fue removido");
     }
     
     // Para buscar los pacientes por id.
@@ -71,12 +89,7 @@ public class MedicalRecordSystem {
 
     // Add the employee id search here
     public Employee findEmployeeById(String id) {
-        for ( Employee e : registeredEmployees) {
-            if ( e.getId().equals(id) ) {
-                return e;
-            }
-        }
-        return null;
+        return registeredEmployees.get(id);
     }
 
     // Para enseñar todos los pacientes. 
@@ -293,7 +306,7 @@ public class MedicalRecordSystem {
     public void findDoctorsBySpecialty(Employee.MedicalSpecialty specialty) {
         System.out.println("Medicos con especialidad " + specialty + ":");
         boolean found = false;
-        for (Employee e : registeredEmployees) {
+        for (Employee e : registeredEmployees.values()) {
             if (e.getRole() == Employee.Role.DOCTOR && e.getSpecialty() == specialty) {
                 System.out.println(e.toString());
                 found = true;
@@ -307,7 +320,7 @@ public class MedicalRecordSystem {
     public void showAvailableDoctors() {
         System.out.println("Medicos disponibles:");
         boolean found = false;
-        for (Employee e : registeredEmployees) {
+        for (Employee e : registeredEmployees.values()) {
             if (e.getRole() == Employee.Role.DOCTOR && e.isAvailable()) {
                 System.out.println(e.toString());
                 found = true;

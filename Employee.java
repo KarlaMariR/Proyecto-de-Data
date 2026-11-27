@@ -15,6 +15,7 @@ public class Employee {
         GENERAL,
         PEDIATRIC,
         RETINOLOGIST,
+        NEURO_OPHTHALMOLOGIST,
         NONE
     }
 
